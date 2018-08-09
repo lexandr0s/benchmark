@@ -76,7 +76,7 @@ echo $old_conf > $RIG_CONF
 echo $old_wallet > $WALLET_CONF
 
 echo -e  "Benchmark full complete"
-echo -e "Switch to the minor, previous benchmarks"
+echo -e "Switch to the miner, previous benchmarks"
 miner stop
 sleep 5
 miner start
