@@ -1,0 +1,38 @@
+{
+"command":"benchmark",
+"bench_data":
+	{
+		"algo":
+			[{
+			"algo_name":"ethash",
+			"miners":
+				[{
+				"miner":"ethminer",
+				"wallet":"walet.sonf"
+				},{
+				"miner":"claymore",
+				"wallet":"wallet.conf"
+				},{
+				"miner":"bminer",
+				"wallet":"wallet.conf"
+				}]
+			},{
+			"algo_name":"equihash",
+			"miners":
+				[{
+				"miner":"dstm",
+				"wallet":"wallet.conf"
+				},{
+				"miner":"bminer",
+				"wallet":"wallet.conf"
+				}]
+			},{
+			"algo_name":"lyra2z",
+			"miners":
+				[{
+				"miner":"ccminer",
+				"wallet":"wallet.conf"
+				}]
+			}]
+	}
+}

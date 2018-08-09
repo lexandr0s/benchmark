@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+
+[ -t 1 ] && . colors
+
+ 
+
+RIG_CONF="/hive-config/rig.conf"
+WALLET_CONF="/hive-config/wallet.conf"
+
+HASHRATE="/run/hive/khs"
+BENCH_TIME=180
+
+old_conf=$(cat $RIG_CONF)
+old_wallet=$(cat $WALLET_CONF)
+
+##Files for test
+BENCH_JSON="benchmark.json" #input json
+RESULT_JSON="result.json" #output json
+
+body=$(cat $BENCH_JSON) #Here need get json from API call
+#####
+
+#Create empty result json
+result=$(jq -n '{"jsonrpc": "2.0","algo": []}') # here possible need add the required parameters for API call
+
+count_algo=$(echo $body | jq ".bench_data.algo | length")
+
+for (( i=0; i < $count_algo; i++ ))
+do
+	algo_name=$(echo $body | jq ".bench_data.algo[$i].algo_name")
+	
+	#Add algo array to result json
+	result=$(echo $result | jq ".algo[.algo | length] |= . + {"algo_name":$algo_name,"miners":[]}")
+	
+	echo -e "\nBenchmark algorithm: $algo_name"
+	count_miner=$(echo $body | jq ".bench_data.algo[$i].miners | length")
+	for (( j=0; j < $count_miner; j++ ))
+	do
+		miner=$(echo $body | jq ".bench_data.algo[$i].miners[$j].miner")
+		wallet=$(echo $body | jq ".bench_data.algo[$i].miners[$j].wallet" --raw-output)
+		
+		sed -i "s/^MINER=.*/MINER=${miner}/" $RIG_CONF
+		echo "$wallet" > $WALLET_CONF
+		
+		miner stop
+		echo "Pause 10 sec"
+		sleep 5
+		
+		#Maybe here apply OC
+		
+		sleep 5
+		echo -e "\nMiner: $miner. Start benchmark"
+		miner start
+		
+		#Progress benchmark
+		rem_time=$BENCH_TIME
+		while [ $rem_time -ge 0 ]
+		do
+			hashrate=$(cat $HASHRATE)
+			echo -ne "Time left: $rem_time    Current hashrate: $hashrate khs       \r"
+			sleep 1
+			rem_time=$(( $rem_time - 1 ))
+		done
+		
+		echo -e "Benchmark $miner finished                                                      \n"
+		
+		hashrate=$(cat $HASHRATE)
+		result=$(echo $result | jq ".algo[$i].miners[.algo[$i].miners | length] |= . + {"miner":$miner,"hashrate":$hashrate}")
+		
+		
+	done
+done
+
+#Switch to old miner
+echo $old_conf > $RIG_CONF
+echo $old_wallet > $WALLET_CONF
+
+echo -e  "Benchmark full complete"
+echo -e "Switch to the minor, previous benchmarks"
+miner stop
+sleep 5
+miner start
+
+echo $result | jq . > $RESULT_JSON #save result to json file for test

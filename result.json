@@ -1,0 +1,44 @@
+{
+  "jsonrpc": "2.0",
+  "algo": [
+    {
+      "algo_name": "ethash",
+      "miners": [
+        {
+          "miner": "ethminer",
+          "hashrate": 80566
+        },
+        {
+          "miner": "claymore",
+          "hashrate": 79253
+        },
+        {
+          "miner": "bminer",
+          "hashrate": 80088.8
+        }
+      ]
+    },
+    {
+      "algo_name": "equihash",
+      "miners": [
+        {
+          "miner": "dstm",
+          "hashrate": 1.06477
+        },
+        {
+          "miner": "bminer",
+          "hashrate": 1.0819
+        }
+      ]
+    },
+    {
+      "algo_name": "lyra2z",
+      "miners": [
+        {
+          "miner": "ccminer",
+          "hashrate": 2936.58
+        }
+      ]
+    }
+  ]
+}
