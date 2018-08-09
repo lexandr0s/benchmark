@@ -65,6 +65,8 @@ do
 		echo -e "Benchmark $miner finished                                                      \n"
 		
 		hashrate=$(cat $HASHRATE)
+		
+		#Add miners and hasrate to result json
 		result=$(echo $result | jq ".algo[$i].miners[.algo[$i].miners | length] |= . + {"miner":$miner,"hashrate":$hashrate}")
 		
 		
